@@ -1,12 +1,17 @@
-import { Button } from '../ui/button'
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react'
 
 function Header() {
   return (
     <header>
       <nav className='flex justify-between items-center'>
         <img src='' alt='logo' className='h-16' />
-        <Button variant={"outline"}>Sign In</Button>
-        <Button variant={"outline"}>Sign Up</Button>
+        <SignedOut>
+          <SignInButton />
+          <SignUpButton />
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
       </nav>
     </header>
   )
