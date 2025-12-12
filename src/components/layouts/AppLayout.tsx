@@ -7,7 +7,6 @@ function AppLayout() {
     return (
         <div>
             <div className='grid-background'></div>
-            <ModeToggle />
             <main className='min-h-screen container'>
                 <Header />
                 <Outlet />
