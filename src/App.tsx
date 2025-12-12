@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import './App.css'
 import AppLayout from './components/layouts/AppLayout';
 import LandingPage from './pages/LandingPage';
 import Onboarding from './pages/Onboarding';
