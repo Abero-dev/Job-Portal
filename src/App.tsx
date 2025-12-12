@@ -1,8 +1,22 @@
-import React from 'react'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import AppLayout from './components/layouts/AppLayout';
+import LandingPage from './pages/LandingPage';
+
+const router = createBrowserRouter([
+  {
+    element: <AppLayout />,
+    children: [
+      {
+        path: '/',
+        element: <LandingPage />
+      }
+    ]
+  }
+]);
 
 function App() {
   return (
-    <div>App</div>
+    <RouterProvider router={router} />
   )
 }
 
