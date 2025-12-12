@@ -5,13 +5,15 @@ function Header() {
     <header>
       <nav className='flex justify-between items-center'>
         <img src='' alt='logo' className='h-16' />
-        <SignedOut>
-          <SignInButton />
-          <SignUpButton />
-        </SignedOut>
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
+        <div className='flex justify-between items-center gap-x-5'>
+          <SignedOut>
+            <SignInButton />
+            <SignUpButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+        </div>
       </nav>
     </header>
   )
