@@ -3,10 +3,11 @@ import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carouse
 import { Link } from "react-router-dom"
 import companies from '../data/companies.json'
 import Autoplay from "embla-carousel-autoplay"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 function LandingPage() {
   return (
-    <main className="flex flex-col gap-10 sm:gap-20 py-10 sm:py-20">
+    <main className="flex flex-col gap-10 sm:gap-20 py-10 sm:py-20 px-5 lg:px-40">
       <section className="text-center text-5xl lg:text-6xl font-extrabold px-5">
         <h1 className="gradient-title">Find The Job Of Your Dreams</h1>
       </section>
@@ -25,7 +26,7 @@ function LandingPage() {
         plugins={[
           Autoplay({ delay: 2000, stopOnInteraction: false })
         ]}
-        className="w-full py-10 px-10 sm:px-50"
+        className="w-full py-10"
       >
         <CarouselContent className="flex gap-x-5 lg:gap-x-20 items-center">
           {companies.map((companie) => {
@@ -39,11 +40,9 @@ function LandingPage() {
         </CarouselContent>
       </Carousel>
 
-      {/* banner */}
+      <img src="/banner.webp" alt="banner" className="rounded-4xl" />
 
-      <section>
-        {/* cards */}
-      </section>
+      
 
       {/* accordion */}
     </main >
