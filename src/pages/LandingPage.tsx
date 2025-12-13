@@ -2,8 +2,10 @@ import { Button } from "@/components/ui/button"
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 import { Link } from "react-router-dom"
 import companies from '../data/companies.json'
+import faqs from '../data/faq.json'
 import Autoplay from "embla-carousel-autoplay"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 function LandingPage() {
   return (
@@ -61,7 +63,21 @@ function LandingPage() {
         </Card>
       </section>
 
-      {/* accordion */}
+      <Accordion type="single" collapsible>
+        {faqs.map((faq, index) => {
+          return (
+            <AccordionItem key={index} value={`item-${index + 1}`}>
+              <AccordionTrigger>
+                {faq.question}w
+              </AccordionTrigger>
+              <AccordionContent>
+                {faq.answer}
+              </AccordionContent>
+            </AccordionItem>
+          )
+        })}
+
+      </Accordion>
     </main >
   )
 }
