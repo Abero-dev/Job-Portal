@@ -1,5 +1,4 @@
 import { Outlet } from 'react-router-dom'
-import { ModeToggle } from '../dark-mode/mode-toggle'
 import Header from './Header'
 import Footer from './Footer'
 
