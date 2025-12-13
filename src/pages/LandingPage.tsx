@@ -67,10 +67,10 @@ function LandingPage() {
         {faqs.map((faq, index) => {
           return (
             <AccordionItem key={index} value={`item-${index + 1}`}>
-              <AccordionTrigger>
-                {faq.question}w
+              <AccordionTrigger className="pr-2 sm:pr-5">
+                {faq.question}
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="pl-1 sm:pl-5">
                 {faq.answer}
               </AccordionContent>
             </AccordionItem>
