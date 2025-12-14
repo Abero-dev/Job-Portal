@@ -1,13 +1,10 @@
-import { SignedIn, SignedOut, SignIn, UserButton } from '@clerk/clerk-react'
+import { SignedIn, SignedOut, SignIn, SignUp, UserButton } from '@clerk/clerk-react'
 import { Button } from '../ui/button'
 import { Link } from 'react-router-dom'
 import { PenBox } from 'lucide-react'
-import { useState } from 'react'
 import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
 
 function Header() {
-
-  const [showSignIn, setShowSignIn] = useState(false);
 
   return (
     <header>
@@ -30,6 +27,21 @@ function Header() {
                   fallbackRedirectUrl="/">
 
                 </SignIn>
+              </DialogContent>
+            </Dialog>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant={"outline"}
+                >
+                  Sign Up
+                </Button>
+              </DialogTrigger>
+              <DialogContent className='h-fit w-fit bg-transparent'>
+                <SignUp
+                  signInForceRedirectUrl="/onboarding"
+                  fallbackRedirectUrl="/">
+                </SignUp>
               </DialogContent>
             </Dialog>
           </SignedOut>
