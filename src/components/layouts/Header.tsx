@@ -1,20 +1,48 @@
-import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react'
+import { SignedIn, SignedOut, SignIn, UserButton } from '@clerk/clerk-react'
 import { Button } from '../ui/button'
+import { Link } from 'react-router-dom'
+import { PenBox } from 'lucide-react'
+import { useState } from 'react'
+import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
 
 function Header() {
+
+  const [showSignIn, setShowSignIn] = useState(false);
+
   return (
     <header>
       <nav className='flex justify-between items-center'>
         <img src='/jobby_logo.webp' alt='logo' className='h-32' />
         <div className='flex justify-around items-center gap-x-5 mr-16'>
-          <Button variant={"outline"}>Sign In</Button>
-          {/* <SignedOut>
-            <SignInButton />
-            <SignUpButton />
+
+          <SignedOut>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant={"outline"}
+                >
+                  Sign In
+                </Button>
+              </DialogTrigger>
+              <DialogContent className='h-fit w-fit bg-transparent'>
+                <SignIn
+                  signUpForceRedirectUrl="/onboarding"
+                  fallbackRedirectUrl="/">
+
+                </SignIn>
+              </DialogContent>
+            </Dialog>
           </SignedOut>
           <SignedIn>
+            <Button variant={"magenta"} className='rounded-full'>
+              <PenBox size={20} />
+              Post a job
+            </Button>
+            <Link to="/post-job">
+
+            </Link>
             <UserButton />
-          </SignedIn> */}
+          </SignedIn>
         </div>
       </nav>
     </header>
