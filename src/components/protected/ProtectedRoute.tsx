@@ -1,7 +1,12 @@
 import { useUser } from '@clerk/clerk-react'
+import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 
-function ProtectedRoute({ children }) {
+interface ProtectedRouteProps {
+    children: ReactNode
+}
+
+function ProtectedRoute({ children }: ProtectedRouteProps) {
 
     const { isSignedIn, user, isLoaded } = useUser();
     const { pathname } = useLocation();

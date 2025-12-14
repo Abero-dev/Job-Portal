@@ -3,35 +3,28 @@ import { Button } from '../ui/button'
 import { Link, useSearchParams } from 'react-router-dom'
 import { BriefcaseBusiness, Heart, PenBox } from 'lucide-react'
 import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 function Header() {
-  const [searchParams, setSearchParams] = useSearchParams()
 
-  const showSignIn = searchParams.get("sign-in") === "true"
-
-  const handleOpenSignInChange = (open: boolean) => {
-    if (open) {
-      setSearchParams({ "sign-in": "true" })
-    } else {
-      searchParams.delete("sign-in")
-      setSearchParams(searchParams)
-    }
-  }
+  const [showSignIn, setShowSignIn] = useState(false)
+  const [showSignUp, setShowSignUp] = useState(false)
+  const [search, setSearch] = useSearchParams();
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      const dialog = document.querySelector('[role="dialog"]')
+    if (search.get("sign-in"))
+      setShowSignIn(true);
+  }, [search])
 
-      if (dialog && !dialog.contains(target) && showSignIn) {
-        handleOpenSignInChange(false)
-      }
+  const handleOverlayClick = (e: any, action: string) => {
+    if (e.target === e.currentTarget) {
+      if (action === "sign-in")
+        setShowSignIn(false)
+      else
+        setShowSignUp(false)
+      setSearch({});
     }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [showSignIn])
+  }
 
   return (
     <header>
@@ -40,48 +33,29 @@ function Header() {
           <img src='/jobby_logo.webp' alt='logo' className='h-32' />
         </Link>
         <div className='flex justify-around items-center gap-x-5 mr-16'>
+
           <SignedOut>
-            <Dialog open={showSignIn} onOpenChange={handleOpenSignInChange}>
-              <DialogTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  onClick={() => handleOpenSignInChange(true)}
-                >
-                  Sign In
-                </Button>
-              </DialogTrigger>
-              <DialogContent className='h-fit w-fit bg-transparent'>
-                <SignIn
-                  signUpForceRedirectUrl="/onboarding"
-                  fallbackRedirectUrl="/"
-                  afterSignInUrl="/"
-                />
-              </DialogContent>
-            </Dialog>
-
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant={"outline"}>
-                  Sign Up
-                </Button>
-              </DialogTrigger>
-              <DialogContent className='h-fit w-fit bg-transparent'>
-                <SignUp
-                  signInForceRedirectUrl="/onboarding"
-                  fallbackRedirectUrl="/"
-                />
-              </DialogContent>
-            </Dialog>
+            <Button
+              variant={"outline"}
+              onClick={() => setShowSignIn(true)}
+            >
+              Sign In
+            </Button>
+            <Button
+              variant={"outline"}
+              onClick={() => setShowSignUp(true)}
+            >
+              Sign Up
+            </Button>
           </SignedOut>
-
           <SignedIn>
+            <Button variant={"magenta"} className='rounded-full'>
+              <PenBox size={20} />
+              Post a job
+            </Button>
             <Link to="/post-job">
-              <Button variant={"magenta"} className='rounded-full'>
-                <PenBox size={20} />
-                Post a job
-              </Button>
-            </Link>
 
+            </Link>
             <UserButton
               appearance={{
                 elements: {
@@ -107,6 +81,27 @@ function Header() {
           </SignedIn>
         </div>
       </nav>
+      {
+        showSignIn &&
+        <div
+          className='fixed inset-0 flex items-center justify-center bg-black/50 z-1000'
+          onClick={() => handleOverlayClick(MouseEvent, "sign-in")}>
+          <SignIn
+            signUpForceRedirectUrl="/onboarding"
+            fallbackRedirectUrl="/" />
+        </div>
+      }
+      {
+        showSignUp &&
+        <div
+          className='fixed inset-0 flex items-center justify-center bg-black/50 z-1000'
+          onClick={() => handleOverlayClick(MouseEvent, "sign-up")}>
+          <SignUp
+            signInForceRedirectUrl="/onboarding"
+            fallbackRedirectUrl="/">
+          </SignUp>
+        </div>
+      }
     </header>
   )
 }
