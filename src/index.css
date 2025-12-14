@@ -116,7 +116,7 @@
   }
 
   .gradient-title {
-    background: linear-gradient(to bottom right, var(--color-gray-600), var(--color-gray-300), var(--color-white));
+    background: linear-gradient(to bottom right, var(--color-gray-500), var(--color-gray-300), var(--color-white));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
