@@ -16,13 +16,11 @@ function Header() {
       setShowSignIn(true);
   }, [search])
 
-  const handleOverlayClick = (e: any, action: string) => {
+  const handleOverlayClick = (e: any) => {
     if (e.target === e.currentTarget) {
-      if (action === "sign-in")
-        setShowSignIn(false)
-      else
-        setShowSignUp(false)
-      setSearch({});
+      setShowSignIn(false)
+      setShowSignUp(false)
+      setSearch({})
     }
   }
 
@@ -85,20 +83,20 @@ function Header() {
         showSignIn &&
         <div
           className='fixed inset-0 flex items-center justify-center bg-black/50 z-1000'
-          onClick={() => handleOverlayClick(MouseEvent, "sign-in")}>
+          onClick={handleOverlayClick}>
           <SignIn
             signUpForceRedirectUrl="/onboarding"
-            fallbackRedirectUrl="/" />
+            fallbackRedirectUrl="/onboarding" />
         </div>
       }
       {
         showSignUp &&
         <div
           className='fixed inset-0 flex items-center justify-center bg-black/50 z-1000'
-          onClick={() => handleOverlayClick(MouseEvent, "sign-up")}>
+          onClick={handleOverlayClick}>
           <SignUp
             signInForceRedirectUrl="/onboarding"
-            fallbackRedirectUrl="/">
+            fallbackRedirectUrl="/onboarding">
           </SignUp>
         </div>
       }
