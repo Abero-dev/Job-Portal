@@ -1,4 +1,4 @@
-import { SignedIn, SignedOut, SignIn, SignUp, UserButton } from '@clerk/clerk-react'
+import { SignedIn, SignedOut, SignIn, SignUp, UserButton, useUser } from '@clerk/clerk-react'
 import { Button } from '../ui/button'
 import { Link, useSearchParams } from 'react-router-dom'
 import { BriefcaseBusiness, Heart, PenBox } from 'lucide-react'
@@ -10,6 +10,7 @@ function Header() {
   const [showSignIn, setShowSignIn] = useState(false)
   const [showSignUp, setShowSignUp] = useState(false)
   const [search, setSearch] = useSearchParams();
+  const { user } = useUser();
 
   useEffect(() => {
     if (search.get("sign-in"))
@@ -47,10 +48,13 @@ function Header() {
             </Button>
           </SignedOut>
           <SignedIn>
-            <Button variant={"magenta"} className='rounded-full'>
-              <PenBox size={20} />
-              Post a job
-            </Button>
+            {
+              user?.unsafeMetadata?.role === 'recruiter' &&
+              <Button variant={"magenta"} className='rounded-full'>
+                <PenBox size={20} />
+                Post a job
+              </Button>
+            }
             <Link to="/post-job">
 
             </Link>
