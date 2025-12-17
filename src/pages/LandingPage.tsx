@@ -6,7 +6,6 @@ import faqs from '../data/faq.json'
 import Autoplay from "embla-carousel-autoplay"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { useUser } from "@clerk/clerk-react"
 
 function LandingPage() {
 
