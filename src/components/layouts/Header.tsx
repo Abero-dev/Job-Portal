@@ -1,7 +1,7 @@
 import { SignedIn, SignedOut, SignIn, SignUp, UserButton, useUser } from '@clerk/clerk-react'
 import { Button } from '../ui/button'
 import { Link, useSearchParams } from 'react-router-dom'
-import { BriefcaseBusiness, Heart, PenBox } from 'lucide-react'
+import { BriefcaseBusiness, Heart, PenBox, Repeat } from 'lucide-react'
 import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
 import { useEffect, useState } from 'react'
 
@@ -49,15 +49,24 @@ function Header() {
           </SignedOut>
           <SignedIn>
             {
-              user?.unsafeMetadata?.role === 'recruiter' &&
-              <Button variant={"magenta"} className='rounded-full'>
-                <PenBox size={20} />
-                Post a job
-              </Button>
+              user?.unsafeMetadata?.role !== undefined &&
+              <Link to="/onboarding">
+                <Button variant={"blue"} className='rounded-full'>
+                  <Repeat size={20} />
+                  Change role
+                </Button>
+              </Link>
             }
-            <Link to="/post-job">
+            {
+              user?.unsafeMetadata?.role === 'recruiter' &&
+              <Link to="/post-job">
+                <Button variant={"magenta"} className='rounded-full'>
+                  <PenBox size={20} />
+                  Post a job
+                </Button>
+              </Link>
+            }
 
-            </Link>
             <UserButton
               appearance={{
                 elements: {

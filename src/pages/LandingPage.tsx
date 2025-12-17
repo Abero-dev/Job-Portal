@@ -6,8 +6,10 @@ import faqs from '../data/faq.json'
 import Autoplay from "embla-carousel-autoplay"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { useUser } from "@clerk/clerk-react"
 
 function LandingPage() {
+
   return (
     <main className="flex flex-col gap-10 sm:gap-20 py-10 sm:py-20 px-5 lg:px-40">
       <section className="text-center text-5xl lg:text-6xl font-extrabold px-5">
