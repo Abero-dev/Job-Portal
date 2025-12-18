@@ -1,30 +1,30 @@
-import { getAllJobs } from "@/api/apiJobs";
 import { useSupabaseClient } from "@/utils/supabaseClient";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import type { SearchJobsParams } from "./types/jobs/types";
 
-export function useJobs() {
+export function useJobs(cb: any, options: SearchJobsParams) {
     const [jobs, setJobs] = useState<any[] | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<any>(null);
+    const [loadingJobs, setLoadingJobs] = useState<boolean>(false);
+    const [errorJobs, setErrorJobs] = useState<any>(null);
     const supabase = useSupabaseClient();
 
     const fetchJobs = async () => {
-        setLoading(true);
-        setError(null);
+        setLoadingJobs(true);
+        setErrorJobs(null);
         try {
-            const data = await getAllJobs(supabase);
+            const data = await cb(supabase, options);
             setJobs(data);
             if (data === null) {
-                setError(new Error("Failed to fetch jobs"));
+                setErrorJobs(new Error("Failed to fetch jobs"));
             }
         } catch (err) {
-            setError(err);
+            setErrorJobs(err);
             toast.error("An unexpected error occurred.");
         } finally {
-            setLoading(false);
+            setLoadingJobs(false);
         }
     };
 
-    return { jobs, loading, error, fetchJobs };
+    return { jobs, loadingJobs, errorJobs, fetchJobs };
 }
