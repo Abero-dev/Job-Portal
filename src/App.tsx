@@ -10,6 +10,7 @@ import SavedJob from './pages/SavedJob';
 import MyJobs from './pages/MyJobs';
 import { ThemeProvider } from "@/components/dark-mode/theme-provider"
 import ProtectedRoute from './components/protected/ProtectedRoute';
+import { ToastContainer } from 'react-toastify'
 
 const router = createBrowserRouter([
   {
@@ -69,6 +70,18 @@ function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <RouterProvider router={router} />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </ThemeProvider>
   )
 }
