@@ -2,7 +2,6 @@ import { SignedIn, SignedOut, SignIn, SignUp, UserButton, useUser } from '@clerk
 import { Button } from '../ui/button'
 import { Link, useSearchParams } from 'react-router-dom'
 import { BriefcaseBusiness, Heart, PenBox, Repeat } from 'lucide-react'
-import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
 import { useEffect, useState } from 'react'
 
 function Header() {
@@ -97,9 +96,7 @@ function Header() {
         <div
           className='fixed inset-0 flex items-center justify-center bg-black/50 z-1000'
           onClick={handleOverlayClick}>
-          <SignIn
-            signUpForceRedirectUrl="/onboarding"
-            fallbackRedirectUrl="/onboarding" />
+          <SignIn />
         </div>
       }
       {
@@ -107,10 +104,7 @@ function Header() {
         <div
           className='fixed inset-0 flex items-center justify-center bg-black/50 z-1000'
           onClick={handleOverlayClick}>
-          <SignUp
-            signInForceRedirectUrl="/onboarding"
-            fallbackRedirectUrl="/onboarding">
-          </SignUp>
+          <SignUp />
         </div>
       }
     </header>
