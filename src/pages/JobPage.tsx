@@ -1,4 +1,4 @@
-import { getSingleJob } from '@/api/apiJobs'
+import { getSingleJob, updateHiringStatus } from '@/api/apiJobs'
 import { useJobs } from '@/hooks/useJobs'
 import { useUser } from '@clerk/clerk-react'
 import { Briefcase, DoorClosed, DoorOpen, MapPinIcon } from 'lucide-react'
@@ -6,6 +6,8 @@ import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { BarLoader } from 'react-spinners'
 import MDEditor from '@uiw/react-md-editor'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { toast } from 'react-toastify'
 
 function JobPage() {
 
@@ -17,6 +19,43 @@ function JobPage() {
     data: job,
     fn: fnJob,
   } = useJobs(getSingleJob, id !== undefined && parseInt(id))
+
+  const {
+    loading: loadingHiringStatus,
+    fn: fnHiringStatus,
+  } = useJobs(updateHiringStatus);
+
+  const handleStatusChange = async (value: string) => {
+    if (!id) return;
+
+    const isOpen = value === "open";
+
+    console.log("Attempting update with:", {
+      job_id: parseInt(id),
+      isOpen,
+      user_id: user?.id,
+      recruiter_id: job?.recruiter_id
+    });
+
+    try {
+      const result = await fnHiringStatus({
+        job_id: parseInt(id),
+        isOpen
+      });
+
+      console.log("Update result:", result);
+
+      if (result) {
+        toast.success("Job status updated successfully!");
+        await fnJob();
+      } else {
+        toast.error("Failed to update job status");
+      }
+    } catch (error) {
+      console.error("Update error:", error);
+      toast.error("Failed to update job status");
+    }
+  }
 
   useEffect(() => {
     if (isLoaded) fnJob()
@@ -42,14 +81,32 @@ function JobPage() {
           {job?.isOpen ? <><DoorOpen /> Open</> : <><DoorClosed /> Closed</>}
         </div>
       </div>
-      <div>
-
-      </div>
+      {job?.recruiter_id === user?.id &&
+        <Select onValueChange={handleStatusChange}>
+          <div className={`w-full ${job?.isOpen ? "bg-green-950" : "bg-red-950"}`}>
+            <SelectTrigger className='w-full'>
+              <SelectValue placeholder={"Hiring status " + (job?.isOpen ? "( Open )" : "( Closed )")} />
+            </SelectTrigger>
+          </div>
+          <SelectContent>
+            <SelectItem
+              value="open"
+            >
+              Open
+            </SelectItem>
+            <SelectItem
+              value="closed"
+            >
+              Closed
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      }
       <h2 className='text-2xl sm:text-3xl font-bold'>About the job</h2>
       <p className='sm:text-lg'>{job?.description}</p>
       <h2 className='text-2xl sm:text-3xl font-bold'>What we are looking for</h2>
       <MDEditor.Markdown source={job?.requirements} />
-    </div>
+    </div >
   )
 }
 

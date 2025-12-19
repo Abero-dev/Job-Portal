@@ -18,10 +18,12 @@ export function useJobs(cb: any, initialOptions: any | null = null) {
             if (res === null) {
                 setError(new Error("Failed to fetch jobs"));
             }
+            return res;
         } catch (err) {
             setError(err);
             console.error(err)
             toast.error("An unexpected error occurred.");
+            throw err;
         } finally {
             setLoading(false);
         }

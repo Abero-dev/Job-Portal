@@ -83,9 +83,10 @@ export async function getSingleJob(
 
 export async function updateHiringStatus(
     supabase: SupabaseClient,
-    job_id: number,
-    isOpen: boolean
+    params: { job_id: number; isOpen: boolean }
 ) {
+    const { job_id, isOpen } = params;
+
     const { data, error } = await supabase
         .from("jobs")
         .update({ isOpen })
@@ -94,7 +95,7 @@ export async function updateHiringStatus(
 
     if (error) {
         toast.error("An error occurred updating the job. Please try again later.");
-        console.error(error);
+        console.error("Update error:", error);
         return null;
     }
 

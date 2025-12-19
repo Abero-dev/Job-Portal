@@ -219,7 +219,7 @@ function JobListing() {
             <SelectContent>
               <SelectGroup>
                 <SelectItem value="all">All Companies</SelectItem>
-                {companies?.map((company) => {
+                {companies?.map((company: any) => {
                   return (
                     <SelectItem
                       key={company.id}
@@ -280,7 +280,7 @@ function JobListing() {
               <SelectContent>
                 <SelectGroup>
                   <SelectItem value="all">All Companies</SelectItem>
-                  {companies?.map((company) => {
+                  {companies?.map((company: any) => {
                     return (
                       <SelectItem
                         key={company.id}
@@ -467,7 +467,7 @@ function JobListing() {
       <div className='mt-2 sm:mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'>
         {loadingJobs === false && (
           currentJobs?.length !== 0 ?
-            currentJobs?.map(job =>
+            currentJobs?.map((job: any) =>
               <JobCard
                 key={job.id}
                 job={job}
