@@ -81,6 +81,7 @@ function JobPage() {
           {job?.isOpen ? <><DoorOpen /> Open</> : <><DoorClosed /> Closed</>}
         </div>
       </div>
+      {loadingHiringStatus && <BarLoader width={"100%"} color='#36d7b7' />}
       {job?.recruiter_id === user?.id &&
         <Select onValueChange={handleStatusChange}>
           <div className={`w-full ${job?.isOpen ? "bg-green-950" : "bg-red-950"}`}>
