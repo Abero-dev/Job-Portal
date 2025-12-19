@@ -19,10 +19,45 @@ export async function getAllJobs(
     const { data, error } = await query;
 
     if (error) {
-        toast.error("An error occurred. Please try again later.");
+        toast.error("An error occurred fetching all jobs. Please try again later.");
         console.error(error);
         return null;
     }
 
     return data;
+}
+
+export async function saveJob(
+    supabase: SupabaseClient,
+    params: { alreadySaved: boolean; saveData: any }
+) {
+    const { alreadySaved, saveData } = params;
+
+    if (alreadySaved) {
+        const { data, error } = await supabase
+            .from("saved_jobs")
+            .delete()
+            .eq("job_id", saveData.job_id)
+            .eq("user_id", saveData.user_id)
+
+        if (error) {
+            toast.error("An error occurred removing from saved jobs. Please try again later.");
+            console.error(error);
+            return null;
+        }
+        return data;
+    }
+    else {
+        const { data, error } = await supabase
+            .from("saved_jobs")
+            .insert([saveData])
+            .select()
+
+        if (error) {
+            toast.error("An error occurred adding to saved jobs. Please try again later.");
+            console.error(error);
+            return null;
+        }
+        return data;
+    }
 }

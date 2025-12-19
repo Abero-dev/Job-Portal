@@ -4,6 +4,10 @@ import { Heart, MapPinIcon, Trash2Icon } from "lucide-react";
 import type { Company } from "@/hooks/types/companies/types";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
+import { saveJob } from "@/api/apiJobs";
+import { useJobs } from "@/hooks/useJobs";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 type JobCardProps = {
     job: {
@@ -14,13 +18,41 @@ type JobCardProps = {
         requirements: string,
         company: Company
     },
-    isMyJob: boolean,
-    savedInit: boolean,
-    onJobSaved: Function
+    isMyJob: boolean | undefined,
+    savedInit: boolean | undefined,
+    onJobSaved: Function | undefined
 }
-function JobCard({ job, isMyJob = true, savedInit, onJobSaved }: JobCardProps) {
+function JobCard({ job, isMyJob = false, savedInit = false, onJobSaved = () => { } }: JobCardProps) {
+
+    const [saved, setSaved] = useState<boolean>(savedInit)
+
+    const { data: savedJob, loading: loadingSavedJob, fn: fnSavedJob } = useJobs(saveJob, null);
 
     const { user } = useUser();
+
+    const handleSaveJob = async () => {
+        if (!user) {
+            toast.error("Please sign in to save jobs");
+            return;
+        }
+
+        await fnSavedJob({
+            alreadySaved: saved,
+            saveData: {
+                user_id: user.id,
+                job_id: job.id
+            }
+        });
+        onJobSaved();
+    }
+
+    useEffect(() => {
+        if (savedJob === null) {
+            setSaved(false);
+        } else if (Array.isArray(savedJob)) {
+            setSaved(savedJob.length > 0);
+        }
+    }, [savedJob]);
 
     return (
         <Card>
@@ -49,7 +81,23 @@ function JobCard({ job, isMyJob = true, savedInit, onJobSaved }: JobCardProps) {
                         More Details
                     </Button>
                 </Link>
-                <Heart size={20} stroke="red" fill="red" />
+                {!isMyJob && (
+                    <Button
+                        variant={"outline"}
+                        className="w-15"
+                        onClick={handleSaveJob}
+                        disabled={loadingSavedJob}
+                    >
+                        {
+                            saved ?
+                                <Heart size={20} stroke="red" fill="red" />
+                                :
+                                <Heart size={20} />
+                        }
+
+                    </Button>
+                )}
+
             </CardFooter>
         </Card>
     )

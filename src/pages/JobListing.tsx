@@ -2,14 +2,13 @@ import { BarLoader } from 'react-spinners';
 import { useJobs } from '../hooks/useJobs';
 import { useEffect, useState } from 'react';
 import { getAllJobs } from '@/api/apiJobs';
-import { useCompanies } from '@/hooks/useCompanies';
 import JobCard from '@/components/jobs/JobCard';
 
 function JobListing() {
   const [searchQuery, setSearchQuery] = useState<string | null>("")
   const [location, setLocation] = useState<string | null>("")
   const [company_id, setCompany_id] = useState<number | null>(null)
-  const { jobs, loadingJobs, errorJobs, fetchJobs } = useJobs(getAllJobs, { searchQuery, location, company_id });
+  const { data: jobs, loading: loadingJobs, error: errorJobs, fn: fetchJobs } = useJobs(getAllJobs, { searchQuery, location, company_id });
 
   useEffect(() => {
     fetchJobs();
@@ -26,7 +25,13 @@ function JobListing() {
         {loadingJobs === false && (
           jobs?.length !== 0 ?
             jobs?.map(job =>
-              <JobCard key={job.id} job={job} />
+              <JobCard
+                key={job.id}
+                job={job}
+                isMyJob={undefined}
+                savedInit={job?.saved?.length > 0}
+                onJobSaved={undefined}
+              />
             )
             :
             <p>There's no jobs yet</p>
