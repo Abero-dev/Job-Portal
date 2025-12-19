@@ -13,7 +13,7 @@ import { State, Country } from 'country-state-city'
 function JobListing() {
   const [searchQuery, setSearchQuery] = useState<string | null>("")
   const [location, setLocation] = useState<string | undefined>("")
-  const [company_id, setCompany_id] = useState<number | null>(null)
+  const [company_id, setCompany_id] = useState<string | undefined>()
   const { data: jobs, loading: loadingJobs, error: errorJobs, fn: fetchJobs } = useJobs(getAllJobs, { searchQuery, location, company_id });
   const { data: companies, loading: loadingCompanies, fn: fetchCompanies } = useJobs(getAllCompanies);
 
@@ -48,13 +48,19 @@ function JobListing() {
     return state ? state.displayLabel : stateName;
   };
 
-  // Función para manejar el cambio de ubicación
   const handleLocationChange = (value: string) => {
-    // Si el valor es "all", lo convertimos a cadena vacía
     if (value === "all") {
       setLocation("");
     } else {
       setLocation(value);
+    }
+  };
+
+  const handleCompanyChange = (value: string) => {
+    if (value === "all") {
+      setCompany_id("");
+    } else {
+      setCompany_id(value);
     }
   };
 
@@ -92,9 +98,8 @@ function JobListing() {
         </Button>
       </form>
 
-      {/* Contenedor para el filtro de ubicación con botón de clear */}
       <div className="flex items-center gap-2 mb-4">
-        <div className="flex-1">
+        <div className="flex gap-x-4 items-center">
           <Select value={location} onValueChange={handleLocationChange}>
             <SelectTrigger className="h-12">
               <SelectValue placeholder='Filter by Location'>
@@ -103,7 +108,6 @@ function JobListing() {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {/* Opción para seleccionar todos (ningún filtro) con valor "all" */}
                 <SelectItem value="all">All Locations</SelectItem>
                 {statesList.map((state) => {
                   return (
@@ -118,9 +122,28 @@ function JobListing() {
               </SelectGroup>
             </SelectContent>
           </Select>
+          <Select value={company_id} onValueChange={handleCompanyChange}>
+            <SelectTrigger className="h-12">
+              <SelectValue placeholder='Filter by Company' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="all">All Companies</SelectItem>
+                {companies?.map((company) => {
+                  return (
+                    <SelectItem
+                      key={company.id}
+                      value={company.id}
+                    >
+                      {company.name}
+                    </SelectItem>
+                  );
+                })}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
 
-        {/* Botón para limpiar el filtro de ubicación */}
         {location && (
           <Button
             type="button"
