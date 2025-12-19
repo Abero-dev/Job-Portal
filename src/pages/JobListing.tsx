@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectTrigger, SelectGroup, SelectValue, SelectI
 import { State, Country } from 'country-state-city'
 
 function JobListing() {
-  const [searchQuery, setSearchQuery] = useState<string | null>("")
+  const [searchQuery, setSearchQuery] = useState<string | undefined>("")
   const [location, setLocation] = useState<string | undefined>("")
   const [company_id, setCompany_id] = useState<string | undefined>("")
   const { data: jobs, loading: loadingJobs, error: errorJobs, fn: fetchJobs } = useJobs(getAllJobs, { searchQuery, location, company_id });
@@ -42,6 +42,7 @@ function JobListing() {
   const clearFilters = () => {
     setLocation("");
     setCompany_id("");
+    setSearchQuery("");
   };
 
   const getStateLabel = (stateName: string) => {
@@ -145,7 +146,7 @@ function JobListing() {
           </Select>
         </div>
 
-        {(location || company_id) && (
+        {(location || company_id || searchQuery) && (
           <Button
             variant="destructive"
             onClick={clearFilters}
