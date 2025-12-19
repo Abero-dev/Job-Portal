@@ -13,7 +13,7 @@ import { State, Country } from 'country-state-city'
 function JobListing() {
   const [searchQuery, setSearchQuery] = useState<string | null>("")
   const [location, setLocation] = useState<string | undefined>("")
-  const [company_id, setCompany_id] = useState<string | undefined>()
+  const [company_id, setCompany_id] = useState<string | undefined>("")
   const { data: jobs, loading: loadingJobs, error: errorJobs, fn: fetchJobs } = useJobs(getAllJobs, { searchQuery, location, company_id });
   const { data: companies, loading: loadingCompanies, fn: fetchCompanies } = useJobs(getAllCompanies);
 
@@ -39,8 +39,9 @@ function JobListing() {
     return list;
   }, [targetCountries]);
 
-  const clearLocationFilter = () => {
+  const clearFilters = () => {
     setLocation("");
+    setCompany_id("");
   };
 
   const getStateLabel = (stateName: string) => {
@@ -144,16 +145,14 @@ function JobListing() {
           </Select>
         </div>
 
-        {location && (
+        {(location || company_id) && (
           <Button
-            type="button"
-            variant="outline"
-            onClick={clearLocationFilter}
-            className="h-12 px-3"
-            title="Clear location filter"
+            variant="destructive"
+            onClick={clearFilters}
+            className="h-full px-3"
           >
             <X size={18} />
-            <span className="sr-only">Clear filter</span>
+            <span className="">Clear filters</span>
           </Button>
         )}
       </div>
