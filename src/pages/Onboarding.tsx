@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { useUser } from '@clerk/clerk-react'
 import { useNavigate } from 'react-router-dom'
-import { BriefcaseBusiness, User } from 'lucide-react' // Iconos opcionales
+import { BriefcaseBusiness, User } from 'lucide-react'
 
 function Onboarding() {
   const { isLoaded, user } = useUser()
@@ -40,21 +40,18 @@ function Onboarding() {
 
   return (
     <main className="flex flex-col justify-center items-center min-h-screen px-4 py-8 sm:px-6 md:px-8 lg:px-40">
-      {/* Título responsivo */}
       <h2 className="gradient-title font-extrabold text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tighter text-center mb-8 sm:mb-12 md:mb-16">
         I want to be a ...
       </h2>
 
-      {/* Contenedor de botones responsivo */}
       <div className="w-full max-w-4xl flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 md:gap-8">
         {
           role !== 'candidate' &&
           <Button
             variant={'blue'}
-            className="h-20 sm:h-24 md:h-28 lg:h-32 w-full sm:w-auto min-w-[200px] md:min-w-[250px] text-lg sm:text-xl md:text-2xl px-6 sm:px-8 md:px-10 flex items-center justify-center gap-3 sm:gap-4"
+            className="h-20 sm:h-24 md:h-28 lg:h-32 w-full sm:w-auto min-w-50 md:min-w-62.5 text-lg sm:text-xl md:text-2xl px-6 sm:px-8 md:px-10 flex items-center justify-center gap-3 sm:gap-4"
             onClick={() => handleRoleSelection('candidate')}
           >
-            {/* Icono opcional para mejor visualización */}
             <User className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
             Candidate
           </Button>
@@ -63,7 +60,7 @@ function Onboarding() {
           role !== 'recruiter' &&
           <Button
             variant={'magenta'}
-            className="h-20 sm:h-24 md:h-28 lg:h-32 w-full sm:w-auto min-w-[200px] md:min-w-[250px] text-lg sm:text-xl md:text-2xl px-6 sm:px-8 md:px-10 flex items-center justify-center gap-3 sm:gap-4"
+            className="h-20 sm:h-24 md:h-28 lg:h-32 w-full sm:w-auto min-w-50 md:min-w-62.5 text-lg sm:text-xl md:text-2xl px-6 sm:px-8 md:px-10 flex items-center justify-center gap-3 sm:gap-4"
             onClick={() => handleRoleSelection('recruiter')}
           >
             <BriefcaseBusiness className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
@@ -72,7 +69,6 @@ function Onboarding() {
         }
       </div>
 
-      {/* Texto de rol actual - responsivo */}
       {
         role &&
         <div className="mt-12 sm:mt-16 md:mt-20 text-center px-4">
@@ -84,7 +80,6 @@ function Onboarding() {
             <span className="ml-2">right now</span>
           </p>
 
-          {/* Instrucción adicional opcional para pantallas pequeñas */}
           <p className="mt-4 text-sm sm:text-base text-gray-600 max-w-md">
             {role === 'candidate'
               ? "As a candidate, you can browse and apply for jobs that match your skills."
@@ -94,7 +89,6 @@ function Onboarding() {
         </div>
       }
 
-      {/* Botón de cancelar/volver (opcional) */}
       {role && (
         <div className="mt-8 sm:mt-10">
           <Button
