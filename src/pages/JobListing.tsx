@@ -9,12 +9,23 @@ import { Button } from '@/components/ui/button';
 import { Search, X, Filter } from 'lucide-react';
 import { Select, SelectContent, SelectTrigger, SelectGroup, SelectValue, SelectItem } from '@/components/ui/select';
 import { State, Country } from 'country-state-city'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
 
 function JobListing() {
   const [searchQuery, setSearchQuery] = useState<string | undefined>("")
   const [location, setLocation] = useState<string | undefined>("")
   const [company_id, setCompany_id] = useState<string | undefined>("")
-  const [showFilters, setShowFilters] = useState(false); // Para móvil
+  const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(2); // Por defecto para móvil
+
   const { data: jobs, loading: loadingJobs, error: errorJobs, fn: fetchJobs } = useJobs(getAllJobs, { searchQuery, location, company_id });
   const { data: companies, loading: loadingCompanies, fn: fetchCompanies } = useJobs(getAllCompanies);
 
@@ -40,11 +51,35 @@ function JobListing() {
     return list;
   }, [targetCountries]);
 
+  // Ajustar items por página según el tamaño de pantalla
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      if (window.innerWidth >= 1024) {
+        setItemsPerPage(6); // LG screens y mayores - aumentado a 6
+      } else {
+        setItemsPerPage(2); // MD y menores
+      }
+    };
+
+    updateItemsPerPage();
+    window.addEventListener('resize', updateItemsPerPage);
+
+    return () => window.removeEventListener('resize', updateItemsPerPage);
+  }, []);
+
+  // Calcular la paginación
+  const totalItems = jobs?.length || 0;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentJobs = jobs?.slice(startIndex, endIndex) || [];
+
   const clearFilters = () => {
     setLocation("");
     setCompany_id("");
     setSearchQuery("");
-    setShowFilters(false); // Cerrar filtros en móvil después de limpiar
+    setShowFilters(false);
+    setCurrentPage(1); // Resetear a primera página
   };
 
   const getStateLabel = (stateName: string) => {
@@ -58,6 +93,7 @@ function JobListing() {
     } else {
       setLocation(value);
     }
+    setCurrentPage(1); // Resetear a primera página
   };
 
   const handleCompanyChange = (value: string) => {
@@ -66,6 +102,41 @@ function JobListing() {
     } else {
       setCompany_id(value);
     }
+    setCurrentPage(1); // Resetear a primera página
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll suave hacia arriba para mejor UX
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Generar array de páginas para mostrar (máximo 5 páginas visibles)
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      // Mostrar todas las páginas
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Lógica para mostrar páginas con ellipsis
+      let startPage = Math.max(1, currentPage - 2);
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+      // Ajustar si estamos cerca del final
+      if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
   };
 
   useEffect(() => {
@@ -74,7 +145,15 @@ function JobListing() {
 
   useEffect(() => {
     fetchJobs();
+    setCurrentPage(1); // Resetear página cuando cambian filtros
   }, [searchQuery, location, company_id]);
+
+  useEffect(() => {
+    // Ajustar currentPage si excede el total de páginas después de filtrar
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
 
   const handleSearch = (e: any) => {
     e.preventDefault();
@@ -82,17 +161,16 @@ function JobListing() {
 
     const query: any = formData.get("search-query");
     if (query === null) fetchJobs()
-    else setSearchQuery(query)
+    else setSearchQuery(query);
+    setCurrentPage(1); // Resetear a primera página
   }
 
   return (
     <div className='px-4 sm:px-6 md:px-10 lg:px-20 xl:px-40 py-4 sm:py-6 md:py-8'>
-      {/* Título responsivo */}
       <h1 className='gradient-title font-extrabold text-4xl sm:text-5xl md:text-6xl text-center pb-6 sm:pb-8'>
         Latest Jobs
       </h1>
 
-      {/* Barra de búsqueda */}
       <form onSubmit={handleSearch} className='flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 mb-4 sm:mb-6'>
         <div className="flex-1 flex gap-2">
           <Input
@@ -101,7 +179,6 @@ function JobListing() {
             name='search-query'
             className='h-12 sm:h-11 flex-1 px-4 text-md'
           />
-          {/* Botón de filtros para móvil */}
           <Button
             type="button"
             variant="outline"
@@ -118,7 +195,6 @@ function JobListing() {
         </Button>
       </form>
 
-      {/* Filtros - Desktop */}
       <div className="hidden sm:flex items-center gap-2 mb-4 sm:mb-6">
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full">
           <Select value={location} onValueChange={handleLocationChange}>
@@ -246,10 +322,172 @@ function JobListing() {
         </div>
       )}
 
-      <div className='mt-6 sm:mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'>
+      {/* Información de paginación para pantallas pequeñas - EN UNA LÍNEA */}
+      {!loadingJobs && totalItems > 0 && (
+        <div className="flex sm:hidden justify-between items-center mb-4 p-3 rounded-lg">
+          <div className="flex items-center gap-2 justify-between min-w-full">
+            <p className="text-sm">
+              Showing <span className="font-semibold">{startIndex + 1}-{Math.min(endIndex, totalItems)}</span> of <span className="font-semibold">{totalItems}</span>
+            </p>
+            <p className="text-sm">
+              Page <span className="font-semibold">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Información de paginación y paginación para pantallas grandes */}
+      {!loadingJobs && totalItems > 0 && (
+        <div className="hidden sm:flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 p-2 sm:p-3 rounded-lg">
+          {/* Texto "Showing..." para móvil y desktop */}
+          <p className="mb-2 sm:mb-0">
+            Showing <span className="font-semibold">{startIndex + 1}-{Math.min(endIndex, totalItems)}</span> of <span className="font-semibold">{totalItems}</span> jobs
+          </p>
+
+          {/* Paginación desktop EN MEDIO de los textos */}
+          {totalPages > 1 && !loadingJobs && (
+            <div className="hidden sm:flex justify-center mb-4 sm:mb-0">
+              <Pagination>
+                <PaginationContent>
+                  {/* Botón anterior */}
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+
+                  {/* Primera página */}
+                  {currentPage > 3 && totalPages > 5 && (
+                    <>
+                      <PaginationItem>
+                        <Button
+                          onClick={() => handlePageChange(1)}
+                          variant="outline"
+                          className="cursor-pointer h-9 w-9 p-0"
+                        >
+                          1
+                        </Button>
+                      </PaginationItem>
+                      {currentPage > 4 && (
+                        <PaginationItem>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      )}
+                    </>
+                  )}
+
+                  {/* Páginas del medio */}
+                  {getPageNumbers().map((page) => (
+                    <PaginationItem key={page}>
+                      <Button
+                        onClick={() => handlePageChange(page)}
+                        variant={currentPage === page ? "blue" : "outline"}
+                        className="cursor-pointer h-9 w-9 p-0"
+                      >
+                        {page}
+                      </Button>
+                    </PaginationItem>
+                  ))}
+
+                  {/* Última página */}
+                  {currentPage < totalPages - 2 && totalPages > 5 && (
+                    <>
+                      {currentPage < totalPages - 3 && (
+                        <PaginationItem>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      )}
+                      <PaginationItem>
+                        <Button
+                          onClick={() => handlePageChange(totalPages)}
+                          variant="outline"
+                          className="cursor-pointer h-9 w-9 p-0"
+                        >
+                          {totalPages}
+                        </Button>
+                      </PaginationItem>
+                    </>
+                  )}
+
+                  {/* Botón siguiente */}
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+
+          {/* Texto "Page..." para móvil y desktop */}
+          <p className="text-sm sm:ml-4 hidden sm:block">
+            Page <span className="font-semibold">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
+          </p>
+        </div>
+      )}
+
+      {/* Paginación móvil ENCIMA del grid - ÚNICA en móvil */}
+      {totalPages > 1 && !loadingJobs && (
+        <div className="mb-6 sm:hidden">
+          <Pagination>
+            <PaginationContent className="flex-wrap justify-center">
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  size="sm"
+                />
+              </PaginationItem>
+
+              {/* Mostrar solo 3 páginas en móvil */}
+              {(() => {
+                let pagesToShow = [];
+                if (totalPages <= 3) {
+                  for (let i = 1; i <= totalPages; i++) {
+                    pagesToShow.push(i);
+                  }
+                } else if (currentPage === 1) {
+                  pagesToShow = [1, 2, 3];
+                } else if (currentPage === totalPages) {
+                  pagesToShow = [totalPages - 2, totalPages - 1, totalPages];
+                } else {
+                  pagesToShow = [currentPage - 1, currentPage, currentPage + 1];
+                }
+
+                return pagesToShow.map((page) => (
+                  <PaginationItem key={page}>
+                    <Button
+                      onClick={() => handlePageChange(page)}
+                      variant={currentPage === page ? "blue" : "outline"}
+                      className="cursor-pointer h-9 w-9 p-0"
+                      size="sm"
+                    >
+                      {page}
+                    </Button>
+                  </PaginationItem>
+                ));
+              })()}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  size="sm"
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
+
+      {/* Grid responsivo - Mostrará 6 elementos en pantallas grandes (2 filas de 3) */}
+      <div className='mt-2 sm:mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'>
         {loadingJobs === false && (
-          jobs?.length !== 0 ?
-            jobs?.map(job =>
+          currentJobs?.length !== 0 ?
+            currentJobs?.map(job =>
               <JobCard
                 key={job.id}
                 job={job}
