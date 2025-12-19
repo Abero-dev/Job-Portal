@@ -24,7 +24,7 @@ function JobListing() {
   const [company_id, setCompany_id] = useState<string | undefined>("")
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(2); // Por defecto para móvil
+  const [itemsPerPage, setItemsPerPage] = useState(2);
 
   const { data: jobs, loading: loadingJobs, error: errorJobs, fn: fetchJobs } = useJobs(getAllJobs, { searchQuery, location, company_id });
   const { data: companies, loading: loadingCompanies, fn: fetchCompanies } = useJobs(getAllCompanies);
@@ -51,13 +51,12 @@ function JobListing() {
     return list;
   }, [targetCountries]);
 
-  // Ajustar items por página según el tamaño de pantalla
   useEffect(() => {
     const updateItemsPerPage = () => {
       if (window.innerWidth >= 1024) {
-        setItemsPerPage(6); // LG screens y mayores - aumentado a 6
+        setItemsPerPage(6);
       } else {
-        setItemsPerPage(2); // MD y menores
+        setItemsPerPage(2);
       }
     };
 
@@ -67,7 +66,6 @@ function JobListing() {
     return () => window.removeEventListener('resize', updateItemsPerPage);
   }, []);
 
-  // Calcular la paginación
   const totalItems = jobs?.length || 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -79,7 +77,7 @@ function JobListing() {
     setCompany_id("");
     setSearchQuery("");
     setShowFilters(false);
-    setCurrentPage(1); // Resetear a primera página
+    setCurrentPage(1);
   };
 
   const getStateLabel = (stateName: string) => {
@@ -93,7 +91,7 @@ function JobListing() {
     } else {
       setLocation(value);
     }
-    setCurrentPage(1); // Resetear a primera página
+    setCurrentPage(1);
   };
 
   const handleCompanyChange = (value: string) => {
@@ -102,31 +100,26 @@ function JobListing() {
     } else {
       setCompany_id(value);
     }
-    setCurrentPage(1); // Resetear a primera página
+    setCurrentPage(1);
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // Scroll suave hacia arriba para mejor UX
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Generar array de páginas para mostrar (máximo 5 páginas visibles)
   const getPageNumbers = () => {
     const pages = [];
     const maxVisiblePages = 5;
 
     if (totalPages <= maxVisiblePages) {
-      // Mostrar todas las páginas
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
     } else {
-      // Lógica para mostrar páginas con ellipsis
       let startPage = Math.max(1, currentPage - 2);
       let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
-      // Ajustar si estamos cerca del final
       if (endPage - startPage + 1 < maxVisiblePages) {
         startPage = Math.max(1, endPage - maxVisiblePages + 1);
       }
@@ -145,11 +138,10 @@ function JobListing() {
 
   useEffect(() => {
     fetchJobs();
-    setCurrentPage(1); // Resetear página cuando cambian filtros
+    setCurrentPage(1);
   }, [searchQuery, location, company_id]);
 
   useEffect(() => {
-    // Ajustar currentPage si excede el total de páginas después de filtrar
     if (currentPage > totalPages && totalPages > 0) {
       setCurrentPage(totalPages);
     }
@@ -162,7 +154,7 @@ function JobListing() {
     const query: any = formData.get("search-query");
     if (query === null) fetchJobs()
     else setSearchQuery(query);
-    setCurrentPage(1); // Resetear a primera página
+    setCurrentPage(1);
   }
 
   return (
@@ -198,7 +190,7 @@ function JobListing() {
       <div className="hidden sm:flex items-center gap-2 mb-4 sm:mb-6">
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full">
           <Select value={location} onValueChange={handleLocationChange}>
-            <SelectTrigger className="h-12 sm:h-11 flex-1 min-w-[200px]">
+            <SelectTrigger className="h-12 sm:h-11 flex-1 min-w-50">
               <SelectValue placeholder='Filter by Location'>
                 {location ? getStateLabel(location) : 'Filter by Location'}
               </SelectValue>
@@ -221,7 +213,7 @@ function JobListing() {
           </Select>
 
           <Select value={company_id} onValueChange={handleCompanyChange}>
-            <SelectTrigger className="h-12 sm:h-11 flex-1 min-w-[200px]">
+            <SelectTrigger className="h-12 sm:h-11 flex-1 min-w-50">
               <SelectValue placeholder='Filter by Company' />
             </SelectTrigger>
             <SelectContent>
@@ -322,7 +314,6 @@ function JobListing() {
         </div>
       )}
 
-      {/* Información de paginación para pantallas pequeñas - EN UNA LÍNEA */}
       {!loadingJobs && totalItems > 0 && (
         <div className="flex sm:hidden justify-between items-center mb-4 p-3 rounded-lg">
           <div className="flex items-center gap-2 justify-between min-w-full">
@@ -336,20 +327,17 @@ function JobListing() {
         </div>
       )}
 
-      {/* Información de paginación y paginación para pantallas grandes */}
       {!loadingJobs && totalItems > 0 && (
         <div className="hidden sm:flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 p-2 sm:p-3 rounded-lg">
-          {/* Texto "Showing..." para móvil y desktop */}
+
           <p className="mb-2 sm:mb-0">
             Showing <span className="font-semibold">{startIndex + 1}-{Math.min(endIndex, totalItems)}</span> of <span className="font-semibold">{totalItems}</span> jobs
           </p>
 
-          {/* Paginación desktop EN MEDIO de los textos */}
           {totalPages > 1 && !loadingJobs && (
             <div className="hidden sm:flex justify-center mb-4 sm:mb-0">
               <Pagination>
                 <PaginationContent>
-                  {/* Botón anterior */}
                   <PaginationItem>
                     <PaginationPrevious
                       onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
@@ -357,7 +345,6 @@ function JobListing() {
                     />
                   </PaginationItem>
 
-                  {/* Primera página */}
                   {currentPage > 3 && totalPages > 5 && (
                     <>
                       <PaginationItem>
@@ -377,7 +364,6 @@ function JobListing() {
                     </>
                   )}
 
-                  {/* Páginas del medio */}
                   {getPageNumbers().map((page) => (
                     <PaginationItem key={page}>
                       <Button
@@ -390,7 +376,6 @@ function JobListing() {
                     </PaginationItem>
                   ))}
 
-                  {/* Última página */}
                   {currentPage < totalPages - 2 && totalPages > 5 && (
                     <>
                       {currentPage < totalPages - 3 && (
@@ -410,7 +395,6 @@ function JobListing() {
                     </>
                   )}
 
-                  {/* Botón siguiente */}
                   <PaginationItem>
                     <PaginationNext
                       onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
@@ -422,14 +406,12 @@ function JobListing() {
             </div>
           )}
 
-          {/* Texto "Page..." para móvil y desktop */}
           <p className="text-sm sm:ml-4 hidden sm:block">
             Page <span className="font-semibold">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
           </p>
         </div>
       )}
 
-      {/* Paginación móvil ENCIMA del grid - ÚNICA en móvil */}
       {totalPages > 1 && !loadingJobs && (
         <div className="mb-6 sm:hidden">
           <Pagination>
@@ -442,7 +424,6 @@ function JobListing() {
                 />
               </PaginationItem>
 
-              {/* Mostrar solo 3 páginas en móvil */}
               {(() => {
                 let pagesToShow = [];
                 if (totalPages <= 3) {
@@ -483,7 +464,6 @@ function JobListing() {
         </div>
       )}
 
-      {/* Grid responsivo - Mostrará 6 elementos en pantallas grandes (2 filas de 3) */}
       <div className='mt-2 sm:mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'>
         {loadingJobs === false && (
           currentJobs?.length !== 0 ?

@@ -61,3 +61,42 @@ export async function saveJob(
         return data;
     }
 }
+
+export async function getSingleJob(
+    supabase: SupabaseClient,
+    job_id: number
+) {
+    const { data, error } = await supabase
+        .from("jobs")
+        .select("*, company:companies(name,logo_url), applications:applications(*)")
+        .eq("id", job_id)
+        .single()
+
+    if (error) {
+        toast.error("An error occurred getting the job. Please try again later.");
+        console.error(error);
+        return null;
+    }
+
+    return data;
+}
+
+export async function updateHiringStatus(
+    supabase: SupabaseClient,
+    job_id: number,
+    isOpen: boolean
+) {
+    const { data, error } = await supabase
+        .from("jobs")
+        .update({ isOpen })
+        .eq("id", job_id)
+        .select()
+
+    if (error) {
+        toast.error("An error occurred updating the job. Please try again later.");
+        console.error(error);
+        return null;
+    }
+
+    return data;
+}
