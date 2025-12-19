@@ -7,7 +7,7 @@ export async function getAllCompanies(
     const { data, error } = await supabase.from("companies").select("*");;
 
     if (error) {
-        toast.error("An error occurred. Please try again later.");
+        toast.error("An error occurred getting all companies. Please try again later.");
         console.error(error);
         return null;
     }
