@@ -159,7 +159,7 @@ function Header() {
       {
         showSignIn &&
         <div
-          className='fixed inset-0 flex items-center justify-center bg-black/50 z-1000'
+          className='fixed inset-0 min-h-screen flex items-center justify-center bg-black/50 z-1000'
           onClick={handleOverlayClick}>
           <SignIn />
         </div>
@@ -167,7 +167,7 @@ function Header() {
       {
         showSignUp &&
         <div
-          className='fixed inset-0 flex items-center justify-center bg-black/50 z-1000'
+          className='fixed inset-0 min-h-screen flex items-center justify-center bg-black/50 z-1000'
           onClick={handleOverlayClick}>
           <SignUp />
         </div>
