@@ -8,6 +8,7 @@ import { BarLoader } from 'react-spinners'
 import MDEditor from '@uiw/react-md-editor'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'react-toastify'
+import ApplyJobDrawer from '@/components/applications/ApplyJobDrawer'
 
 function JobPage() {
 
@@ -107,6 +108,12 @@ function JobPage() {
       <p className='sm:text-lg'>{job?.description}</p>
       <h2 className='text-2xl sm:text-3xl font-bold'>What we are looking for</h2>
       <MDEditor.Markdown source={job?.requirements} />
+
+      {
+        job?.recruiter_id !== user?.id &&
+        <ApplyJobDrawer job={job} user={user} fetchJob={fnJob}
+          applied={job?.applications?.find((app: any) => app.candidate_id === user?.id)} />
+      }
     </div >
   )
 }
