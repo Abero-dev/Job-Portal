@@ -54,12 +54,14 @@ export async function applyToJob(
     }
 }
 
-export async function updateApplications(
+export async function updateApplicationsStatus(
     supabase: SupabaseClient,
-    { job_id }: { job_id: number },
-    status: string
+    params: { job_id: number; status: string }
 ) {
-    const { data, error } = await supabase.from("applications")
+    const { job_id, status } = params;
+
+    const { data, error } = await supabase
+        .from("applications")
         .update({ status })
         .eq("job_id", job_id)
         .select();
