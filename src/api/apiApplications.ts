@@ -72,5 +72,7 @@ export async function updateApplicationsStatus(
         return null;
     }
 
+    toast.success("Application status updated correctly.");
+
     return data;
 }

@@ -39,24 +39,12 @@ function JobPage() {
       recruiter_id: job?.recruiter_id
     });
 
-    try {
-      const result = await fnHiringStatus({
-        job_id: parseInt(id),
-        isOpen
-      });
+    const result = await fnHiringStatus({
+      job_id: parseInt(id),
+      isOpen
+    });
 
-      console.log("Update result:", result);
-
-      if (result) {
-        toast.success("Job status updated successfully!");
-        await fnJob();
-      } else {
-        toast.error("Failed to update job status");
-      }
-    } catch (error) {
-      console.error("Update error:", error);
-      toast.error("Failed to update job status");
-    }
+    if (result) await fnJob();
   }
 
   useEffect(() => {

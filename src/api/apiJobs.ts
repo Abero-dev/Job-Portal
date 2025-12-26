@@ -99,5 +99,7 @@ export async function updateHiringStatus(
         return null;
     }
 
+    toast.success("Job hiring status updated correctly.");
+
     return data;
 }
