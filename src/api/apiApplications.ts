@@ -53,3 +53,22 @@ export async function applyToJob(
         return null;
     }
 }
+
+export async function updateApplications(
+    supabase: SupabaseClient,
+    { job_id }: { job_id: number },
+    status: string
+) {
+    const { data, error } = await supabase.from("applications")
+        .update({ status })
+        .eq("job_id", job_id)
+        .select();
+
+    if (error || data.length === 0) {
+        toast.error("An error occurred updating the application. Please try again later.");
+        console.error(error);
+        return null;
+    }
+
+    return data;
+}
