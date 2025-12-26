@@ -9,6 +9,7 @@ import MDEditor from '@uiw/react-md-editor'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'react-toastify'
 import ApplyJobDrawer from '@/components/applications/ApplyJobDrawer'
+import ApplicationCard from '@/components/applications/ApplicationCard'
 
 function JobPage() {
 
@@ -114,6 +115,17 @@ function JobPage() {
         <ApplyJobDrawer job={job} user={user} fetchJob={fnJob}
           applied={job?.applications?.find((app: any) => app.candidate_id === user?.id)} />
       }
+
+      {job?.applications.length > 0 && job?.recruiter_id === user?.id && (
+        <div className='flex flex-col gap-y-5 mb-5'>
+          <h2 className='text-2xl sm:text-3xl font-bold'>Applications</h2>
+          {job?.applications.map((application: any) => {
+            console.log(application)
+            return <ApplicationCard key={application.id} application={application} isCandidate={false} />
+          }
+          )}
+        </div>
+      )}
     </div >
   )
 }
