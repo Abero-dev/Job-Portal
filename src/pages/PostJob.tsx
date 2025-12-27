@@ -12,8 +12,9 @@ import { useUser } from '@clerk/clerk-react';
 import { BarLoader } from 'react-spinners';
 import MDEditor from '@uiw/react-md-editor';
 import { Button } from '@/components/ui/button';
+import { addNewJob } from '@/api/apiJobs';
 
-// Actualizar el schema para aceptar el valor especial
+// Schema actualizado con transformación a número
 const schema = z.object({
   title: z.string().min(1, {
     message: "Title is required"
@@ -26,7 +27,7 @@ const schema = z.object({
   }),
   company_id: z.string().refine(val => val !== "unselected", {
     message: "Company is required"
-  }),
+  }).transform((val) => parseInt(val, 10)), // Convierte string a número
   requirements: z.string().min(1, {
     message: "Requirements are required"
   }),
@@ -38,7 +39,7 @@ function PostJob() {
       title: "",
       description: "",
       location: "unselected",
-      company_id: "unselected",
+      company_id: "unselected", // Este es string en el formulario
       requirements: ""
     },
     resolver: zodResolver(schema),
@@ -80,12 +81,25 @@ function PostJob() {
     fn: fetchCompanies
   } = useJobs(getAllCompanies);
 
+  const {
+    loading: loadingCreateJob,
+    error: errorCreateJob,
+    data: dataCreateJob,
+    fn: fnCreateJob
+  } = useJobs(addNewJob)
+
   useEffect(() => {
     fetchCompanies();
   }, []);
 
   const onSubmit = (data: any) => {
-    console.log(data);
+    fnCreateJob({
+      job_data: {
+        ...data,
+        recruiter_id: user?.id,
+        isOpen: true
+      }
+    });
   };
 
   if (!isLoaded || loadingCompanies) {
@@ -142,25 +156,26 @@ function PostJob() {
             control={control}
             render={({ field }) => (
               <Select
-                value={field.value}
+                value={field.value.toString()}
                 onValueChange={field.onChange}
               >
                 <SelectTrigger className="h-12 sm:h-11 flex-1 w-[50%]">
                   <SelectValue placeholder='Select a Company'>
                     {field.value === "unselected"
                       ? "Select a company"
-                      : companies?.find((c: any) => c.id === field.value)?.name || field.value
+                      : companies?.find((c: any) => c.id.toString() === field.value.toString())?.name
                     }
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
+                    <SelectItem value="unselected">Select a company</SelectItem>
                     {companies?.map((company: any) => (
                       <SelectItem
                         key={company.id}
-                        value={company.name}
+                        value={company.id.toString()} // ID como string
                       >
-                        {company.name}
+                        {company.name} {/* Nombre visible */}
                       </SelectItem>
                     ))}
                   </SelectGroup>
@@ -182,13 +197,17 @@ function PostJob() {
           )}
         />
         {errors.requirements && <p className='text-red-500'>{errors.requirements.message}</p>}
+
+        {errorCreateJob && <p className='text-red-500'>Error creating job: {errorCreateJob.message}</p>}
+
         <Button
           type="submit"
           variant="blue"
           size="lg"
           className="mt-2"
+          disabled={loadingCreateJob}
         >
-          Post Job
+          {loadingCreateJob ? "Posting..." : "Post Job"}
         </Button>
       </form>
     </div>
