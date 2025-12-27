@@ -21,9 +21,28 @@ export async function addNewCompany(
 ) {
     const { company_data } = params;
 
+    const random = Math.floor(Math.random() * 90000);
+    const fileName = `logo-${random}-${company_data.name}`;
+
+    const { error: storageError } = await supabase
+        .storage
+        .from('company-logo')
+        .upload(fileName, company_data.logo);
+
+    if (storageError) {
+        console.error('Storage error:', storageError);
+        toast.error("Failed to upload company logo. Please try again.");
+        return null;
+    }
+
+    const logo_url = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/company-logo/${fileName}`;
+
     const { data, error } = await supabase
         .from("companies")
-        .insert([company_data])
+        .insert([{
+            name: company_data.name,
+            logo_url,
+        }])
         .select()
 
     if (error) {
