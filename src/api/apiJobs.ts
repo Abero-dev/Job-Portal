@@ -103,3 +103,25 @@ export async function updateHiringStatus(
 
     return data;
 }
+
+export async function addNewJob(
+    supabase: SupabaseClient,
+    params: { job_data: any }
+) {
+    const { job_data } = params;
+
+    const { data, error } = await supabase
+        .from("jobs")
+        .insert([job_data])
+        .select()
+
+    if (error) {
+        toast.error("An error occurred adding a new job. Please try again later.");
+        console.error("Insert error:", error);
+        return null;
+    }
+
+    toast.success("Job added correctly.");
+
+    return data;
+}
