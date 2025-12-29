@@ -13,8 +13,8 @@ import { BarLoader } from 'react-spinners';
 import MDEditor from '@uiw/react-md-editor';
 import { Button } from '@/components/ui/button';
 import { addNewJob } from '@/api/apiJobs';
+import AddCompanyDrawer from '@/components/company/AddCompanyDrawer';
 
-// Schema actualizado con transformación a número
 const schema = z.object({
   title: z.string().min(1, {
     message: "Title is required"
@@ -27,7 +27,7 @@ const schema = z.object({
   }),
   company_id: z.string().refine(val => val !== "unselected", {
     message: "Company is required"
-  }).transform((val) => parseInt(val, 10)), // Convierte string a número
+  }).transform((val) => parseInt(val, 10)),
   requirements: z.string().min(1, {
     message: "Requirements are required"
   }),
@@ -39,7 +39,7 @@ function PostJob() {
       title: "",
       description: "",
       location: "unselected",
-      company_id: "unselected", // Este es string en el formulario
+      company_id: "unselected",
       requirements: ""
     },
     resolver: zodResolver(schema),
@@ -107,7 +107,7 @@ function PostJob() {
   }
 
   return (
-    <div className='lg:px-40 px-4'>
+    <div className='lg:px-40 px-4 mt-5'>
       <h1 className='gradient-title font-extrabold text-5xl sm:text-7xl text-center pb-8'>Post a Job</h1>
 
       <form
@@ -120,7 +120,7 @@ function PostJob() {
         <Textarea placeholder='Job Description' {...register("description")} />
         {errors.description && <p className='text-red-500'>{errors.description.message}</p>}
 
-        <div className='flex items-center gap-4'>
+        <div className='flex lg:flex-row flex-col items-center gap-4'>
           <Controller
             name='location'
             control={control}
@@ -129,7 +129,7 @@ function PostJob() {
                 value={field.value}
                 onValueChange={field.onChange}
               >
-                <SelectTrigger className="h-12 w-[50%]">
+                <SelectTrigger className="h-12 lg:w-[50%] w-full">
                   <SelectValue placeholder='Select a location'>
                     {getStateLabel(field.value)}
                   </SelectValue>
@@ -159,7 +159,7 @@ function PostJob() {
                 value={field.value.toString()}
                 onValueChange={field.onChange}
               >
-                <SelectTrigger className="h-12 sm:h-11 flex-1 w-[50%]">
+                <SelectTrigger className="h-12 sm:h-11 flex-1 lg:w-[50%] w-full">
                   <SelectValue placeholder='Select a Company'>
                     {field.value === "unselected"
                       ? "Select a company"
@@ -173,9 +173,9 @@ function PostJob() {
                     {companies?.map((company: any) => (
                       <SelectItem
                         key={company.id}
-                        value={company.id.toString()} // ID como string
+                        value={company.id.toString()}
                       >
-                        {company.name} {/* Nombre visible */}
+                        {company.name}
                       </SelectItem>
                     ))}
                   </SelectGroup>
@@ -184,6 +184,8 @@ function PostJob() {
             )}
           />
           {errors.company_id && <p className='text-red-500 text-sm'>{errors.company_id.message}</p>}
+
+          <AddCompanyDrawer fetchCompanies={fetchCompanies} />
         </div>
 
         <Controller
