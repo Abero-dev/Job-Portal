@@ -38,7 +38,7 @@ function Header() {
           <img
             src='/jobby_logo.webp'
             alt='logo'
-            className='h-30 w-auto'
+            className='h-30 w-auto -my-5'
           />
         </Link>
 
