@@ -5,7 +5,6 @@ import {
     Drawer,
     DrawerClose,
     DrawerContent,
-    DrawerDescription,
     DrawerFooter,
     DrawerHeader,
     DrawerTitle,
@@ -13,6 +12,10 @@ import {
 } from "@/components/ui/drawer"
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
+import { addNewCompany } from '@/api/apiCompanies'
+import { useJobs } from '@/hooks/useJobs'
+import { BarLoader } from 'react-spinners'
+import { useEffect } from 'react'
 
 const schema = z.object({
     name: z.string().min(1, {
@@ -32,7 +35,7 @@ const schema = z.object({
         )
 })
 
-function AddCompanyDrawer(fetchCompanies: any) {
+function AddCompanyDrawer({ fetchCompanies }: any) {
 
     const {
         register,
@@ -42,9 +45,25 @@ function AddCompanyDrawer(fetchCompanies: any) {
         resolver: zodResolver(schema)
     })
 
-    const onSubmit = (data: any) => {
+    const {
+        loading: loadingAddCompany,
+        error: errorAddCompany,
+        data: dataAddCompany,
+        fn: fnAddCompany
+    } = useJobs(addNewCompany)
 
+    const onSubmit = (data: any) => {
+        fnAddCompany({
+            company_data: {
+                name: data.name,
+                logo: data.logo[0]
+            }
+        })
     }
+
+    useEffect(() => {
+        if (dataAddCompany?.length > 0) fetchCompanies();
+    }, [loadingAddCompany])
 
     return (
         <Drawer>
@@ -77,7 +96,8 @@ function AddCompanyDrawer(fetchCompanies: any) {
 
                 {errors.name && <p className='text-red-500'>{errors.name.message}</p>}
                 {errors.logo && <p className='text-red-500'>File must be an image</p>}
-
+                {errorAddCompany?.message && <p className='text-red-500'>{errorAddCompany?.message}</p>}
+                {loadingAddCompany && <BarLoader width={"100%"} color='#36d7b7' />}
                 <DrawerFooter>
                     <DrawerClose asChild>
                         <Button variant="secondary">Cancel</Button>
