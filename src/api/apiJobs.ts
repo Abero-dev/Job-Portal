@@ -125,3 +125,20 @@ export async function addNewJob(
 
     return data;
 }
+
+export async function getSavedJobs(
+    supabase: SupabaseClient,
+) {
+
+    const { data, error } = await supabase
+        .from("saved_jobs")
+        .select("*, job:jobs(*, company:companies(name,logo_url))")
+
+    if (error) {
+        toast.error("An error occurred getting saved jobs. Please try again later.");
+        console.error("Get error:", error);
+        return null;
+    }
+
+    return data;
+}
