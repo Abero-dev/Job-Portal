@@ -84,7 +84,6 @@ function PostJob() {
   const {
     loading: loadingCreateJob,
     error: errorCreateJob,
-    data: dataCreateJob,
     fn: fnCreateJob
   } = useJobs(addNewJob)
 

@@ -22,9 +22,10 @@ type JobCardProps = {
     savedInit: boolean | undefined,
     onJobSaved: Function | undefined
 }
-function JobCard({ job, isMyJob = false, savedInit = false, onJobSaved = () => { } }: JobCardProps) {
+function JobCard({ job, isMyJob = false, savedInit, onJobSaved = () => { } }: JobCardProps) {
 
-    const [saved, setSaved] = useState<boolean>(savedInit)
+    const [saved, setSaved] = useState<boolean>(savedInit || false);
+    const [hasInitialized, setHasInitialized] = useState(false);
 
     const { data: savedJob, loading: loadingSavedJob, fn: fnSavedJob } = useJobs(saveJob, null);
 
@@ -47,12 +48,21 @@ function JobCard({ job, isMyJob = false, savedInit = false, onJobSaved = () => {
     }
 
     useEffect(() => {
-        if (savedJob === null) {
-            setSaved(false);
-        } else if (Array.isArray(savedJob)) {
-            setSaved(savedJob.length > 0);
+        if (savedJob !== null && hasInitialized) {
+            if (Array.isArray(savedJob)) {
+                setSaved(savedJob.length > 0);
+            } else {
+                setSaved(true);
+            }
         }
-    }, [savedJob]);
+    }, [savedJob, hasInitialized]);
+
+    useEffect(() => {
+        if (!hasInitialized && savedInit !== undefined) {
+            setSaved(savedInit);
+            setHasInitialized(true);
+        }
+    }, [savedInit, hasInitialized]);
 
     return (
         <Card>

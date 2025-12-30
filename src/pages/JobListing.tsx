@@ -1,7 +1,7 @@
 import { BarLoader } from 'react-spinners';
 import { useJobs } from '../hooks/useJobs';
 import { useEffect, useState, useMemo } from 'react';
-import { getAllJobs } from '@/api/apiJobs';
+import { getAllJobs, getSavedJobs } from '@/api/apiJobs';
 import JobCard from '@/components/jobs/JobCard';
 import { getAllCompanies } from '@/api/apiCompanies';
 import { Input } from '@/components/ui/input';
@@ -17,6 +17,7 @@ import {
   PaginationPrevious,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
+import { useUser } from '@clerk/clerk-react';
 
 function JobListing() {
   const [searchQuery, setSearchQuery] = useState<string | undefined>("")
@@ -26,8 +27,16 @@ function JobListing() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(2);
 
+  const { user, isLoaded: userLoaded } = useUser();
+
   const { data: jobs, loading: loadingJobs, error: errorJobs, fn: fetchJobs } = useJobs(getAllJobs, { searchQuery, location, company_id });
   const { data: companies, loading: loadingCompanies, fn: fetchCompanies } = useJobs(getAllCompanies);
+
+  const {
+    data: savedJobsData,
+    loading: loadingSavedJobs,
+    fn: fetchSavedJobs
+  } = useJobs(getSavedJobs, null);
 
   const targetCountries = ['US', 'UY', 'ES', 'DE', 'RU', 'AU', 'IN', 'CA'];
 
@@ -51,6 +60,30 @@ function JobListing() {
     return list;
   }, [targetCountries]);
 
+  // Crear un Set de IDs de trabajos guardados para búsqueda rápida
+  const savedJobIds = useMemo(() => {
+    if (!savedJobsData) return new Set<number>();
+
+    return new Set(
+      savedJobsData
+        .filter((savedJob: any) => savedJob.job && savedJob.job.id)
+        .map((savedJob: any) => savedJob.job.id)
+    );
+  }, [savedJobsData]);
+
+  // Filtrar trabajos para excluir los que ya están guardados
+  const filteredJobs = useMemo(() => {
+    if (!jobs) return [];
+
+    // Si hay usuario autenticado, filtrar trabajos guardados
+    if (user && savedJobIds.size > 0) {
+      return jobs.filter((job: any) => !savedJobIds.has(job.id));
+    }
+
+    // Si no hay usuario o no hay trabajos guardados, mostrar todos
+    return jobs;
+  }, [jobs, savedJobIds, user]);
+
   useEffect(() => {
     const updateItemsPerPage = () => {
       if (window.innerWidth >= 1024) {
@@ -66,11 +99,12 @@ function JobListing() {
     return () => window.removeEventListener('resize', updateItemsPerPage);
   }, []);
 
-  const totalItems = jobs?.length || 0;
+  // Usar filteredJobs en lugar de jobs para la paginación
+  const totalItems = filteredJobs?.length || 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentJobs = jobs?.slice(startIndex, endIndex) || [];
+  const currentJobs = filteredJobs?.slice(startIndex, endIndex) || [];
 
   const clearFilters = () => {
     setLocation("");
@@ -136,6 +170,20 @@ function JobListing() {
     fetchCompanies();
   }, [])
 
+  // Cargar trabajos guardados cuando el usuario esté listo
+  useEffect(() => {
+    if (userLoaded && user) {
+      fetchSavedJobs();
+    }
+  }, [userLoaded, user]);
+
+  // Función para refrescar trabajos guardados
+  const refreshSavedJobs = () => {
+    if (user) {
+      fetchSavedJobs();
+    }
+  };
+
   useEffect(() => {
     fetchJobs();
     setCurrentPage(1);
@@ -157,11 +205,40 @@ function JobListing() {
     setCurrentPage(1);
   }
 
+  // Mensaje cuando no hay trabajos para mostrar
+  const noJobsMessage = useMemo(() => {
+    if (loadingJobs || loadingSavedJobs) return "";
+
+    if (totalItems === 0) {
+      if (user && savedJobIds.size > 0 && jobs && jobs.length > 0) {
+        return "All available jobs have been saved. Check your saved jobs or try different filters.";
+      }
+      return "No jobs found matching your criteria";
+    }
+
+    return "";
+  }, [loadingJobs, loadingSavedJobs, totalItems, user, savedJobIds, jobs]);
+
   return (
     <div className='px-4 sm:px-6 md:px-10 lg:px-20 xl:px-40 py-4 sm:py-6 md:py-8'>
       <h1 className='gradient-title font-extrabold text-4xl sm:text-5xl md:text-6xl text-center pb-6 sm:pb-8'>
         Latest Jobs
       </h1>
+
+      <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <p className="text-sm sm:text-base">
+          {user ? "Showing jobs you haven't saved yet" : "Showing all available jobs"}
+        </p>
+        {user && (
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+          >
+            <a href="/saved-jobs">View Saved Jobs ({savedJobIds.size})</a>
+          </Button>
+        )}
+      </div>
 
       <form onSubmit={handleSearch} className='flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 mb-4 sm:mb-6'>
         <div className="flex-1 flex gap-2">
@@ -308,13 +385,13 @@ function JobListing() {
         </div>
       )}
 
-      {loadingJobs && (
+      {(loadingJobs || (user && loadingSavedJobs)) && (
         <div className="mt-4 sm:mt-6">
           <BarLoader width={"100%"} color="#36d7b7" />
         </div>
       )}
 
-      {!loadingJobs && totalItems > 0 && (
+      {!loadingJobs && !(user && loadingSavedJobs) && totalItems > 0 && (
         <div className="flex sm:hidden justify-between items-center mb-4 p-3 rounded-lg">
           <div className="flex items-center gap-2 justify-between min-w-full">
             <p className="text-sm">
@@ -327,7 +404,7 @@ function JobListing() {
         </div>
       )}
 
-      {!loadingJobs && totalItems > 0 && (
+      {!loadingJobs && !(user && loadingSavedJobs) && totalItems > 0 && (
         <div className="hidden sm:flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 p-2 sm:p-3 rounded-lg">
 
           <p className="mb-2 sm:mb-0">
@@ -412,7 +489,7 @@ function JobListing() {
         </div>
       )}
 
-      {totalPages > 1 && !loadingJobs && (
+      {totalPages > 1 && !loadingJobs && !(user && loadingSavedJobs) && (
         <div className="mb-6 sm:hidden">
           <Pagination>
             <PaginationContent className="flex-wrap justify-center">
@@ -465,27 +542,49 @@ function JobListing() {
       )}
 
       <div className='mt-2 sm:mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'>
-        {loadingJobs === false && (
+        {!loadingJobs && !(user && loadingSavedJobs) && (
           currentJobs?.length !== 0 ?
             currentJobs?.map((job: any) =>
               <JobCard
                 key={job.id}
                 job={job}
                 isMyJob={undefined}
-                savedInit={job?.saved?.length > 0}
-                onJobSaved={undefined}
+                savedInit={false} // Como estamos filtrando trabajos no guardados, siempre será false
+                onJobSaved={() => {
+                  refreshSavedJobs();
+                  // También podemos recargar los trabajos para que desaparezca de la lista
+                  fetchJobs();
+                }}
               />
             )
             :
             <div className="col-span-full py-12 text-center">
-              <p className="text-lg sm:text-xl text-gray-600">No jobs found matching your criteria</p>
-              <Button
-                variant="outline"
-                onClick={clearFilters}
-                className="mt-4"
-              >
-                Clear filters and try again
-              </Button>
+              <p className="text-lg sm:text-xl text-gray-600">{noJobsMessage}</p>
+              {noJobsMessage.includes("saved") && (
+                <div className="mt-4 flex flex-col sm:flex-row gap-2 justify-center">
+                  <Button
+                    variant="outline"
+                    asChild
+                  >
+                    <a href="/saved-jobs">View Saved Jobs</a>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={clearFilters}
+                  >
+                    Clear filters and try again
+                  </Button>
+                </div>
+              )}
+              {!noJobsMessage.includes("saved") && (
+                <Button
+                  variant="outline"
+                  onClick={clearFilters}
+                  className="mt-4"
+                >
+                  Clear filters and try again
+                </Button>
+              )}
             </div>
         )}
       </div>
