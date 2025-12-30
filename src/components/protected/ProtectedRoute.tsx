@@ -19,7 +19,7 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
     if (user !== undefined && !user?.unsafeMetadata?.role && pathname !== "/onboarding")
         return <Navigate to="/onboarding" />
 
-    if (user !== undefined && user?.unsafeMetadata?.role && user?.unsafeMetadata.role === "candidate" && pathname !== "/jobs" && pathname !== "/onboarding" && pathname !== `/job/${id}`)
+    if (user !== undefined && user?.unsafeMetadata?.role && user?.unsafeMetadata.role === "candidate" && pathname !== "/jobs" && pathname !== "/onboarding" && pathname !== `/job/${id}` && pathname !== '/saved-jobs')
         return <Navigate to="/onboarding" />
 
     return children
