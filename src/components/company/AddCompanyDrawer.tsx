@@ -74,9 +74,13 @@ function AddCompanyDrawer(fetchCompanies: any) {
                         Add
                     </Button>
                 </form>
+
+                {errors.name && <p className='text-red-500'>{errors.name.message}</p>}
+                {errors.logo && <p className='text-red-500'>File must be an image</p>}
+
                 <DrawerFooter>
                     <DrawerClose asChild>
-                        <Button variant="outline">Cancel</Button>
+                        <Button variant="secondary">Cancel</Button>
                     </DrawerClose>
                 </DrawerFooter>
             </DrawerContent>
