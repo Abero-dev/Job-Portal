@@ -11,7 +11,6 @@ function SavedJob() {
 
   const {
     loading: loadingSavedJobs,
-    error: errorSavedJobs,
     data: dataSavedJobs,
     fn: fnSavedJobs
   } = useJobs(getSavedJobs)
@@ -23,8 +22,8 @@ function SavedJob() {
   if (!isLoaded || loadingSavedJobs) return <BarLoader width={"100%"} color='#36d7b7' />
 
   return (
-    <div className='lg:px-40 px-4 flex flex-col items-center gap-8 pt-8'>
-      <h1 className='gradient-title font-extrabold text-6xl'>Saved Jobs</h1>
+    <div className='lg:px-40 px-4 flex flex-col items-center gap-8 py-8'>
+      <h1 className='gradient-title font-extrabold text-4xl sm:text-5xl md:text-6xl text-center pb-6 sm:pb-8'>Saved Jobs</h1>
 
       {
         dataSavedJobs?.length ?
