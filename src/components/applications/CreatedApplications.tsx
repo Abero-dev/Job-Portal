@@ -9,7 +9,6 @@ function CreatedApplications() {
     const { user } = useUser();
 
     const {
-        loading: loadingApplications,
         data: applications,
         fn: fnApplications
     } = useJobs(getApplications, {
@@ -22,11 +21,17 @@ function CreatedApplications() {
 
     return (
         <div>
-            {applications?.map((application: any) => {
-                return (
-                    <ApplicationCard key={application.id} application={application} isCandidate />
-                )
-            })}
+            {applications?.length > 0 ?
+                <div>
+                    {applications?.map((application: any) => {
+                        return (
+                            <ApplicationCard key={application.id} application={application} isCandidate />
+                        )
+                    })}
+                </div>
+                :
+                <div className="text-center">No applications found</div>
+            }
         </div>
     )
 }
