@@ -5,7 +5,7 @@ import { useUser } from '@clerk/clerk-react';
 import { useEffect } from 'react'
 import { BarLoader } from 'react-spinners';
 
-function SavedJob() {
+function SavedJobs() {
 
   const { isLoaded } = useUser();
 
@@ -45,4 +45,4 @@ function SavedJob() {
   )
 }
 
-export default SavedJob
+export default SavedJobs

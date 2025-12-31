@@ -6,7 +6,7 @@ import Onboarding from './pages/Onboarding';
 import JobListing from './pages/JobListing';
 import JobPage from './pages/JobPage';
 import PostJob from './pages/PostJob';
-import SavedJob from './pages/SavedJob';
+import SavedJobs from './pages/SavedJobs';
 import MyJobs from './pages/MyJobs';
 import { ThemeProvider } from "@/components/dark-mode/theme-provider"
 import ProtectedRoute from './components/protected/ProtectedRoute';
@@ -52,7 +52,7 @@ const router = createBrowserRouter([
         path: '/saved-jobs',
         element:
           <ProtectedRoute>
-            <SavedJob />
+            <SavedJobs />
           </ProtectedRoute>
       },
       {
