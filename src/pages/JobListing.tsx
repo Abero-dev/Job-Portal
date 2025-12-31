@@ -60,7 +60,6 @@ function JobListing() {
     return list;
   }, [targetCountries]);
 
-  // Crear un Set de IDs de trabajos guardados para búsqueda rápida
   const savedJobIds = useMemo(() => {
     if (!savedJobsData) return new Set<number>();
 
@@ -71,16 +70,13 @@ function JobListing() {
     );
   }, [savedJobsData]);
 
-  // Filtrar trabajos para excluir los que ya están guardados
   const filteredJobs = useMemo(() => {
     if (!jobs) return [];
 
-    // Si hay usuario autenticado, filtrar trabajos guardados
     if (user && savedJobIds.size > 0) {
       return jobs.filter((job: any) => !savedJobIds.has(job.id));
     }
 
-    // Si no hay usuario o no hay trabajos guardados, mostrar todos
     return jobs;
   }, [jobs, savedJobIds, user]);
 
@@ -99,7 +95,6 @@ function JobListing() {
     return () => window.removeEventListener('resize', updateItemsPerPage);
   }, []);
 
-  // Usar filteredJobs en lugar de jobs para la paginación
   const totalItems = filteredJobs?.length || 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -170,14 +165,12 @@ function JobListing() {
     fetchCompanies();
   }, [])
 
-  // Cargar trabajos guardados cuando el usuario esté listo
   useEffect(() => {
     if (userLoaded && user) {
       fetchSavedJobs();
     }
   }, [userLoaded, user]);
 
-  // Función para refrescar trabajos guardados
   const refreshSavedJobs = () => {
     if (user) {
       fetchSavedJobs();
@@ -205,7 +198,6 @@ function JobListing() {
     setCurrentPage(1);
   }
 
-  // Mensaje cuando no hay trabajos para mostrar
   const noJobsMessage = useMemo(() => {
     if (loadingJobs || loadingSavedJobs) return "";
 
@@ -549,10 +541,9 @@ function JobListing() {
                 key={job.id}
                 job={job}
                 isMyJob={undefined}
-                savedInit={false} // Como estamos filtrando trabajos no guardados, siempre será false
+                savedInit={false}
                 onJobSaved={() => {
                   refreshSavedJobs();
-                  // También podemos recargar los trabajos para que desaparezca de la lista
                   fetchJobs();
                 }}
               />
