@@ -76,3 +76,24 @@ export async function updateApplicationsStatus(
 
     return data;
 }
+
+export async function getApplications(
+    supabase: SupabaseClient,
+    params: { user_id: string }
+) {
+
+    const { user_id } = params;
+
+    const { data, error } = await supabase
+        .from("applications")
+        .select("*, job:jobs(title, company:companies(name))")
+        .eq("candidate_id", user_id);
+
+    if (error) {
+        toast.error("An error occurred getting the applications. Please try again later.");
+        console.error(error);
+        return null;
+    }
+
+    return data;
+}
