@@ -45,6 +45,8 @@ export async function saveJob(
             console.error(error);
             return null;
         }
+
+        toast.success("Job unsaved successfully.")
         return data;
     }
     else {
@@ -58,6 +60,9 @@ export async function saveJob(
             console.error(error);
             return null;
         }
+
+        toast.success("Job saved successfully.");
+
         return data;
     }
 }
