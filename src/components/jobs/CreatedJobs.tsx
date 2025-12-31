@@ -29,7 +29,12 @@ function CreatedJobs() {
                 <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
                     {myJobs?.map((job: any) => {
                         return (
-                            <JobCard key={job.id} job={job} isMyJob={true} savedInit={undefined} onJobSaved={undefined} />
+                            <JobCard
+                                key={job.id}
+                                job={job}
+                                isMyJob={true}
+                                savedInit={undefined}
+                                onJobSaved={fnMyJobs} />
                         )
                     })}
                 </div>
