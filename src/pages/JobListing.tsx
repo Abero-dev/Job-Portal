@@ -30,7 +30,7 @@ function JobListing() {
   const { user, isLoaded: userLoaded } = useUser();
 
   const { data: jobs, loading: loadingJobs, error: errorJobs, fn: fetchJobs } = useJobs(getAllJobs, { searchQuery, location, company_id });
-  const { data: companies, loading: loadingCompanies, fn: fetchCompanies } = useJobs(getAllCompanies);
+  const { data: companies, fn: fetchCompanies } = useJobs(getAllCompanies);
 
   const {
     data: savedJobsData,

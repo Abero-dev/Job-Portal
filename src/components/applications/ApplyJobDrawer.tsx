@@ -9,7 +9,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useJobs } from "@/hooks/useJobs"
 import { applyToJob } from "@/api/apiApplications"
 import { BarLoader } from "react-spinners"
-import { toast } from "react-toastify"
 
 function ApplyJobDrawer({
     job, user, fetchJob, applied

@@ -7,7 +7,6 @@ import { useParams } from 'react-router-dom'
 import { BarLoader } from 'react-spinners'
 import MDEditor from '@uiw/react-md-editor'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { toast } from 'react-toastify'
 import ApplyJobDrawer from '@/components/applications/ApplyJobDrawer'
 import ApplicationCard from '@/components/applications/ApplicationCard'
 
