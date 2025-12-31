@@ -25,10 +25,11 @@ function SavedJob() {
   return (
     <div className='lg:px-40 px-4 flex flex-col items-center gap-8 pt-8'>
       <h1 className='gradient-title font-extrabold text-6xl'>Saved Jobs</h1>
-      <div className='grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4'>
-        {
-          dataSavedJobs?.length ?
-            dataSavedJobs.map((savedJob: any) =>
+
+      {
+        dataSavedJobs?.length ?
+          <div className='grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4'>
+            {dataSavedJobs.map((savedJob: any) =>
               <JobCard
                 key={savedJob.id}
                 job={savedJob?.job}
@@ -36,10 +37,11 @@ function SavedJob() {
                 onJobSaved={fnSavedJobs}
                 isMyJob={undefined}
               />
-            ) :
-            <div>No saved jobs found</div>
-        }
-      </div>
+            )}
+          </div> :
+          <div className='text-center'>No saved jobs found</div>
+      }
+
     </div>
   )
 }
