@@ -147,3 +147,24 @@ export async function getSavedJobs(
 
     return data;
 }
+
+export async function getMyJobs(
+    supabase: SupabaseClient,
+    params: { user_id: string }
+) {
+
+    const { user_id } = params;
+
+    const { data, error } = await supabase
+        .from("jobs")
+        .select("*, company:companies(name,logo_url)")
+        .eq("recruiter_id", user_id);
+
+    if (error) {
+        toast.error("An error occurred getting your jobs. Please try again later.");
+        console.error("Get error:", error);
+        return null;
+    }
+
+    return data;
+}
