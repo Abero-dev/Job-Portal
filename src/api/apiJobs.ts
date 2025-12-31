@@ -168,3 +168,27 @@ export async function getMyJobs(
 
     return data;
 }
+
+export async function deleteJob(
+    supabase: SupabaseClient,
+    params: { job_id: string }
+) {
+
+    const { job_id } = params;
+
+    const { data, error } = await supabase
+        .from("jobs")
+        .delete()
+        .eq("id", job_id)
+        .select();
+
+    if (error) {
+        toast.error("An error occurred deleting the job. Please try again later.");
+        console.error("Delete error:", error);
+        return null;
+    }
+
+    toast.success("Job deleted successfully.")
+
+    return data;
+}
