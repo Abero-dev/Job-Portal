@@ -3,12 +3,14 @@ import { useJobs } from "@/hooks/useJobs";
 import { useUser } from "@clerk/clerk-react";
 import { useEffect } from "react";
 import JobCard from "./JobCard";
+import { BarLoader } from "react-spinners";
 
 function CreatedJobs() {
 
     const { user } = useUser();
 
     const {
+        loading: loadingMyJobs,
         data: myJobs,
         fn: fnMyJobs
     } = useJobs(getMyJobs, {
@@ -18,6 +20,8 @@ function CreatedJobs() {
     useEffect(() => {
         fnMyJobs();
     }, [])
+
+    if (loadingMyJobs) return <BarLoader width={"100%"} color="#36d7b7" />
 
     return (
         <div>
